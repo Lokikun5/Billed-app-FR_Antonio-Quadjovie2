@@ -22,11 +22,12 @@ export default class NewBill {
     const fileName = filePath[filePath.length-1]
     const regex = /\.(jpg|jpeg|png)$/i;
     if (regex.test(fileName)) {
-      alert("Extension de fichier valide !");
-      console.log('salut')
+      document.getElementById('btn-send-bill').disabled = false;
+      
     } else {
       alert("Extension de fichier non valide");
-      location.reload()
+      document.getElementById('btn-send-bill').disabled = true;
+      return false;
     }
     const formData = new FormData()
     const email = JSON.parse(localStorage.getItem("user")).email

@@ -9,7 +9,7 @@ const row = (bill) => {
     <tr>
       <td>${bill.type}</td>
       <td>${bill.name}</td>
-      <td>${bill.date}</td>
+      <td>${bill.date2}</td>
       <td>${bill.amount} €</td>
       <td>${bill.status}</td>
       <td>
@@ -20,7 +20,16 @@ const row = (bill) => {
   }
 
 const rows = (data) => {
-  return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
+  data.sort((a, b) => {
+    if (a.date2 > b.date2) {
+      return -1;
+    } else if (a.date2 < b.date2) {
+      return 1;
+    }
+    return 0;
+  });
+
+  return (data && data.length) ? data.map(bill => row(bill)).join("") : "";
 }
 
 export default ({ data: bills, loading, error }) => {

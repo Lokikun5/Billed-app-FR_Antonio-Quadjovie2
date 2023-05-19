@@ -39,6 +39,7 @@ export default class {
               return {
                 ...doc,
                 date: formatDate(doc.date),
+                date2: doc.date,
                 status: formatStatus(doc.status)
               }
             } catch(e) {
