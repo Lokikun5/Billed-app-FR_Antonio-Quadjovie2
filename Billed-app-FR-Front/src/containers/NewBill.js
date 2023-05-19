@@ -22,7 +22,7 @@ export default class NewBill {
     const fileName = filePath[filePath.length-1]
     const regex = /\.(jpg|jpeg|png)$/i;
     if (regex.test(fileName)) {
-      alert("Extension de fichier valide ddd!");
+      alert("Extension de fichier valide !");
       console.log('salut')
     } else {
       alert("Extension de fichier non valide");
