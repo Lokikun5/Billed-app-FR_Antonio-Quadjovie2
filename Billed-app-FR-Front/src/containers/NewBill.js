@@ -15,18 +15,22 @@ export default class NewBill {
     this.billId = null
     new Logout({ document, localStorage, onNavigate })
   }
-  handleChangeFile = e => {
+  handleChangeFile = (e,file = null) => {
   e.preventDefault();
-  const file = this.document.querySelector(`input[data-testid="file"]`).files[0];
+  console.log('test');
+  if (!file){
+    console.log('salut')
+    file = this.document.querySelector(`input[data-testid="file"]`).files[0];
+  }
   const filePath = e.target.value.split(/\\/g);
   const fileName = filePath[filePath.length-1];
   const regex = /\.(jpg|jpeg|png)$/i;
   const btnSendBill = document.getElementById('btn-send-bill');
-
+  console.log(file,fileName);
   if (regex.test(fileName)) {
     btnSendBill.removeAttribute('disabled');
   } else {
-    alert("Extension de fichier non valide");
+    // alert("Extension de fichier non valide");
     document.getElementById('btn-send-bill').setAttribute('disabled', 'disabled');
     return false;
   }

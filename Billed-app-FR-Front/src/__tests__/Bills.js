@@ -36,4 +36,31 @@ describe("Given I am connected as an employee", () => {
       expect(dates).toEqual(datesSorted);
     })
   })
+  
+  
+  // New test
+  describe("When i click btn new bill", () => {
+    test("the user navigate to a new page (/bill/new)", () => {
+      const root = document.createElement("div")
+      root.setAttribute("id", "root")
+      document.body.append(root)
+      router()
+      window.onNavigate(ROUTES_PATH.Bills)
+      // Initializing bills
+      const store = null;
+      const billsList = new Bills({
+        document,
+        onNavigate,
+        store,
+        localStorage: window.localStorage
+      });
+      // Navigation feature
+      const newBill = jest.fn(() => billsList.handleClickNewBill)
+      const navigationButton = screen.getByTestId('btn-new-bill');
+      navigationButton.addEventListener('click', newBill);
+      fireEvent.click(navigationButton)
+      expect(screen.getAllByText('Envoyer une note de frais')).toBeTruthy()
+      expect(window.location.href).toContain("/bill/new");
+    })
+  })
 })
