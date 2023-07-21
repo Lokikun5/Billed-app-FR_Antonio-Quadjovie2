@@ -28,9 +28,16 @@ export default class NewBill {
   const btnSendBill = document.getElementById('btn-send-bill');
   console.log(file,fileName);
   if (regex.test(fileName)) {
+    const msgValid = this.document.querySelector('.valideMsg');
+    const valideMessage = "Document valide !";
+    msgValid.insertAdjacentHTML('afterend', `<p class="text-success">${valideMessage}</p>`);
     btnSendBill.removeAttribute('disabled');
   } else {
     // alert("Extension de fichier non valide");
+    const msgErrElement = document.getElementById('msgErr');
+    const errorMessage = "Erreur : quelque chose s'est mal passé.";
+
+    msgErrElement.insertAdjacentHTML('afterend', `<p class="text-danger">${errorMessage}</p>`);
     document.getElementById('btn-send-bill').setAttribute('disabled', 'disabled');
     return false;
   }

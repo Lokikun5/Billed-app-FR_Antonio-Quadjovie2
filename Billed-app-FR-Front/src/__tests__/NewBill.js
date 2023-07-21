@@ -11,6 +11,8 @@ import { localStorageMock } from '../__mocks__/localStorage.js'
 import userEvent from '@testing-library/user-event'
 import mockStore from '../__mocks__/store.js'
 import router from '../app/Router.js'
+import { bills } from "../fixtures/bills.js"
+import user from '@testing-library/user-event'
 jest.mock('../app/store', () => mockStore)
 
 describe("Given I am connected as an employee", () => {
@@ -124,30 +126,65 @@ describe("Given I am connected as an employee", () => {
 
       describe('When I submit the form ', () => {
 
-        test('Then should stay on newBill page', () => {
-  
-          
+        test("form validation", async () => {
+      
+          const root = document.createElement("div");
+          root.setAttribute("id", "root");
+          document.body.append(root);
+          router();
           document.body.innerHTML = NewBillUI();
-          const newBill = new NewBill({ document, onNavigate, localStorage: window.localStorage });
-  
-          // recuperation du formulaire
-          const form = screen.getByTestId('form-new-bill');
-  
-          //expect(screen.getByTestId('expense-type').value).toBe('');
-          expect(screen.getByTestId('expense-name').value).toBe('');
-          expect(screen.getByTestId('datepicker').value).toBe('');
-          expect(screen.getByTestId('amount').value).toBe('');
-          expect(screen.getByTestId('vat').value).toBe('');
-          expect(screen.getByTestId('pct').value).toBe('');
-          expect(screen.getByTestId('file').value).toBe('');
-  
-          // Submit from
-          const handlerSubmit = jest.fn((e) => newBill.handleSubmit(e));
-          form.addEventListener('submit', handlerSubmit);
-          fireEvent.submit(form);
-  
-          expect(handlerSubmit).toBeCalled();
-          expect(form).toBeTruthy();
+          window.onNavigate(ROUTES_PATH.NewBill);
+      
+          const newBill = new NewBill({
+            document, onNavigate, store: mockStore,localStorage: window.localStorage
+          })
+    
+          const inputData = bills[0];
+          const formNewBill = screen.getByTestId('form-new-bill')
+          //Récupérer les différents champs de l'interface
+    
+          const expenseType = screen.getByTestId("expense-type");
+          const expenseName = screen.getByTestId("expense-name");
+          const amount = screen.getByTestId("amount");
+          const date = screen.getByTestId("datepicker");
+          const vat = screen.getByTestId("vat");
+          const pct = screen.getByTestId("pct");
+          const commentary = screen.getByTestId("commentary");
+          const input = screen.getByTestId("file");
+          const file = new File(["img"], inputData.fileName, {
+            type: "image/jpg",
+          });
+    
+    
+          //Remplir les champs à partir d'inputData et s'assurer qu'il soit valide
+          userEvent.selectOptions(expenseType,  screen.getByRole('option', {name: inputData.type}));
+          expect(screen.getByRole('option', {name: inputData.type}).selected).toBe(true)
+    
+          fireEvent.change(expenseName, { target: { value: inputData.name } });
+          expect(expenseName.value).toBe(inputData.name);
+    
+          fireEvent.change(amount, { target: { value: inputData.amount } });
+          expect(amount.value).toBe(inputData.amount.toString());
+    
+          fireEvent.change(date, { target: { value: inputData.date } });
+          expect(date.value).toBe(inputData.date);
+          
+          fireEvent.change(vat, { target: { value: inputData.vat } });
+          expect(vat.value).toBe(inputData.vat);
+    
+          fireEvent.change(pct, { target: { value: inputData.pct } });
+          expect(pct.value).toBe(inputData.pct.toString());
+    
+          fireEvent.change(commentary, { target: { value: inputData.commentary } });
+          expect(commentary.value).toBe(inputData.commentary);
+    
+          user.upload(input, file);
+          
+          //Soumettre le formulaire
+          const handleSubmit = jest.fn(newBill. handleSubmit);      
+          formNewBill.addEventListener('submit', handleSubmit)
+          fireEvent.submit(formNewBill);
+          expect(handleSubmit).toHaveBeenCalled();
         })
       });
   })
