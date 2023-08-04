@@ -15,54 +15,42 @@ export default class NewBill {
     this.billId = null
     new Logout({ document, localStorage, onNavigate })
   }
-  handleChangeFile = (e,file = null) => {
-  e.preventDefault();
-  console.log('test');
-  if (!file){
-    console.log('salut')
-    file = this.document.querySelector(`input[data-testid="file"]`).files[0];
-  }
-  const filePath = e.target.value.split(/\\/g);
-  const fileName = filePath[filePath.length-1];
-  const regex = /\.(jpg|jpeg|png)$/i;
-  const btnSendBill = document.getElementById('btn-send-bill');
-  console.log(file,fileName);
-  if (regex.test(fileName)) {
-    const msgValid = this.document.querySelector('.valideMsg');
-    const valideMessage = "Document valide !";
-    msgValid.insertAdjacentHTML('afterend', `<p class="text-success">${valideMessage}</p>`);
-    btnSendBill.removeAttribute('disabled');
-  } else {
-    // alert("Extension de fichier non valide");
-    const msgErrElement = document.getElementById('msgErr');
-    const errorMessage = "Erreur : quelque chose s'est mal passé.";
+  handleChangeFile = (e) => {
+    e.preventDefault();
+    const file = this.document.querySelector(`input[data-testid="file"]`)
+      .files[0];
+    const filePath = e.target.value.split(/\\/g);
+    const fileName = filePath[filePath.length - 1];
+    
+    let toAllowExtension = ["jpg", "jpeg", "png"];
+   
+    let extensionSplit = fileName.split(".");
+    let extension = extensionSplit[extensionSplit.length - 1];
+   
+    const formData = new FormData();
+    const email = JSON.parse(localStorage.getItem("user")).email;
+    
+    formData.append("file", file);
+    formData.append("email", email);
+    if (!toAllowExtension.includes(extension)) {
+      e.target.value = "";
+    }
+    this.store
+      .bills()
+      .create({
+        data: formData,
+        headers: {
+          noContentType: true,
+        },
+      })
+      .then((data) => {
+        this.billId = data.key;
+        this.fileUrl = data.fileUrl;
+        this.fileName = fileName;
+      })
+      .catch((error) => console.error(error));
+  };
 
-    msgErrElement.insertAdjacentHTML('afterend', `<p class="text-danger">${errorMessage}</p>`);
-    document.getElementById('btn-send-bill').setAttribute('disabled', 'disabled');
-    return false;
-  }
-
-  const formData = new FormData();
-  const email = JSON.parse(localStorage.getItem("user")).email;
-  formData.append('file', file);
-  formData.append('email', email);
-
-  this.store
-    .bills()
-    .create({
-      data: formData,
-      headers: {
-        noContentType: true
-      }
-    })
-    .then(({ fileUrl, key }) => {
-      console.log(fileUrl);
-      this.billId = key;
-      this.fileUrl = fileUrl;
-      this.fileName = fileName;
-    })
-    .catch(error => console.error(error));
-};
 
   handleSubmit = e => {
     e.preventDefault()
