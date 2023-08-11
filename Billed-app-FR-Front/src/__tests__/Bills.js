@@ -44,8 +44,8 @@ describe("Given I am connected as an employee", () => {
     })
 
 
-    // New test 1
-    test("the user navigate to a new page (/bill/new)", () => {
+    // New test 
+    test("the user navigate to a new page (Envoyer une note de frais)", () => {
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname })
       }
