@@ -19,39 +19,63 @@ export default class NewBill {
   }
   handleChangeFile = (e) => {
     e.preventDefault();
-    const file = this.document.querySelector(`input[data-testid="file"]`)
-      .files[0];
+    const fileInput = this.document.querySelector(`input[data-testid="file"]`);
+    const file = fileInput.files[0];
     const filePath = e.target.value.split(/\\/g);
     const fileName = filePath[filePath.length - 1];
-
-    let toAllowExtension = ["jpg", "jpeg", "png"];
-
+  
+    let toAllowExtensions = ["jpg", "jpeg", "png"];
+  
     let extensionSplit = fileName.split(".");
     let extension = extensionSplit[extensionSplit.length - 1];
-
+  
     const formData = new FormData();
     const email = JSON.parse(localStorage.getItem("user")).email;
-
+  
     formData.append("file", file);
     formData.append("email", email);
-    if (!toAllowExtension.includes(extension)) {
-      e.target.value = "";
+  
+    if (!toAllowExtensions.includes(extension.toLowerCase())) {
+      // Invalid file format, show an error message
+      const errorMessageElement = document.createElement("div");
+      errorMessageElement.textContent = "Format de fichier invalide";
+      errorMessageElement.style.color = "red";
+  
+      // Remove the previous error message if it exists
+      const existingErrorMessage = fileInput.parentElement.querySelector(".error-message");
+      if (existingErrorMessage) {
+        fileInput.parentElement.removeChild(existingErrorMessage);
+      }
+  
+      errorMessageElement.classList.add("error-message");
+      fileInput.parentElement.appendChild(errorMessageElement);
+  
+      // Clear the file input
+      fileInput.value = "";
+    } else {
+      // Remove any existing error message
+      const existingErrorMessage = fileInput.parentElement.querySelector(".error-message");
+      if (existingErrorMessage) {
+        fileInput.parentElement.removeChild(existingErrorMessage);
+      }
+  
+      this.store
+        .bills()
+        .create({
+          data: formData,
+          headers: {
+            noContentType: true,
+          },
+        })
+        .then((data) => {
+          this.billId = data.key;
+          this.fileUrl = data.fileUrl;
+          this.fileName = fileName;
+        })
+        .catch((error) => console.error(error));
     }
-    this.store
-      .bills()
-      .create({
-        data: formData,
-        headers: {
-          noContentType: true,
-        },
-      })
-      .then((data) => {
-        this.billId = data.key;
-        this.fileUrl = data.fileUrl;
-        this.fileName = fileName;
-      })
-      .catch((error) => console.error(error));
   };
+  
 
   handleSubmit = (e) => {
     e.preventDefault();
