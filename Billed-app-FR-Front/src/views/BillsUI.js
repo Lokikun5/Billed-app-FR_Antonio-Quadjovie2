@@ -19,7 +19,7 @@ const row = (bill) => {
     </tr>
     `)
   }
-
+  // fix 1
   const rows = (data) => {
     return (data && data.length) ? data
     .sort((a,b) => {return ((new Date(a.date) < new Date(b.date)) ? 1 : -1 )})
